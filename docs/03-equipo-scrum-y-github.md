@@ -65,7 +65,7 @@ Para maximizar la velocidad de entrega sin incurrir en burocracia innecesaria, s
 ### 2.2 Artefactos Oficiales
 1. **Product Backlog:** Lista priorizada de Historias de Usuario, tareas técnicas y requerimientos de seguridad alojada en **GitHub Issues & Projects**.
 2. **Sprint Backlog:** Subconjunto de historias comprometidas para la semana en curso, vinculadas al **Milestone** del Sprint correspondiente.
-3. **Incremento:** Software funcional, integrado en la rama `main`, verificado bajo el *Definition of Done* y etiquetado con versión (`tag`).
+3. **Incremento:** Software funcional, integrado continuamente en la rama `develop` durante el Sprint y liberado hacia `main` al cierre del Sprint mediante Pull Request, verificado bajo el *Definition of Done* y etiquetado con versión (`tag`).
 4. **Bitácora de Sprint (`/docs/sprint-N`):** Carpeta dedicada por cada Sprint que almacena el acta de planificación, resultados del review y acuerdos de la retrospectiva.
 
 ---
@@ -108,10 +108,11 @@ beca-app/
 └── README.md               # Portada ejecutiva e índice maestro del repositorio
 ```
 
-### 4.2 Estrategia de Ramas y Protección (*GitHub Flow*)
-- **Rama `main` protegida:** Representa siempre código estable y verificable. Queda prohibido hacer `push` directo a `main`.
+### 4.2 Estrategia de Ramas y Protección (*GitFlow Simplificado*)
+- **Rama `develop` (Integración del Sprint):** Es la rama base de trabajo diario. Todas las ramas por tarea nacen de `develop` y deben fusionarse **primero hacia `develop`** mediante Pull Request revisado.
+- **Rama `main` (Estable / Release por Sprint):** Representa exclusivamente incrementos cerrados y verificados. Queda prohibido hacer `push` directo o fusionar ramas de tareas directamente en `main`. **Únicamente al final de cada Sprint** se abre un Pull Request desde `develop` hacia `main` para liberar el incremento del Sprint.
 - **Revisión cruzada obligatoria:** Todo cambio entra exclusivamente mediante un **Pull Request (PR)** revisado y aprobado por el otro miembro del equipo (Diana aprueba los PRs de Deurys; Deurys aprueba los PRs de Diana).
-- **Nomenclatura estándar de ramas por tarea:**
+- **Nomenclatura estándar de ramas por tarea (hacia `develop`):**
   - `feature/<descripcion-corta>` → Nuevas pantallas o funcionalidades en Flutter (ej. `feature/login-screen`).
   - `db/<descripcion-corta>` → Tablas, índices, funciones SQL o datos semilla (ej. `db/opportunities-schema`).
   - `security/<descripcion-corta>` → Políticas RLS, endurecimiento o mitigaciones (ej. `security/rls-institutions`).
@@ -126,15 +127,15 @@ Se adopta el estándar **Conventional Commits** para mantener un historial Git l
 - `sec:` controles de seguridad o políticas RLS (`sec: restringir insert en opportunities a instituciones verificadas`).
 - `docs:` cambios exclusivos en documentación (`docs: documentar retrospectiva del sprint 1`).
 
-Al finalizar cada Sprint, se genera un **Git Tag** con versionado semántico (ej. `v0.1.0-sprint1`, `v0.2.0-sprint2`) marcando el incremento entregado.
+Al finalizar cada Sprint y fusionar el PR de `develop` hacia `main`, se genera un **Git Tag** sobre `main` con versionado semántico (ej. `v0.1.0-sprint1`, `v0.2.0-sprint2`) marcando el incremento entregado.
 
 ### 4.4 Gestión en GitHub Projects, Issues y Seguridad del Repositorio
 - **Tablero Kanban (GitHub Projects):** Estructurado en 5 columnas:
   1. `Backlog` (Pendiente general priorizado)
   2. `Sprint` (Comprometido para la semana actual)
   3. `En progreso` (En desarrollo activo)
-  4. `En revisión` (Pull Request abierto esperando Code Review y validación de seguridad)
-  5. `Hecho` (Cumple el *Definition of Done* y fue fusionado a `main`)
+  4. `En revisión` (Pull Request abierto hacia `develop` esperando Code Review y validación de seguridad)
+  5. `Hecho` (Cumple el *Definition of Done* y fue fusionado a `develop`, listo para el PR de cierre de Sprint hacia `main`)
 - **Trazabilidad:** Cada **GitHub Issue** corresponde a una Historia de Usuario o tarea técnica, y cada **Milestone** corresponde a un Sprint (`Sprint 0`, `Sprint 1`, etc.).
 - **Etiquetas Oficiales (*Labels*):** `frontend`, `database`, `security`, `docs`, `bug`.
 - **Seguridad Automatizada en GitHub:** Activación obligatoria de **Dependabot** (alertas de dependencias vulnerables en Flutter/terceros) y **Secret Scanning** (bloqueo de llaves o tokens expuestos accidentalmente).
