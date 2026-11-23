@@ -48,7 +48,7 @@ Toda la especificación funcional, arquitectónica, de seguridad y de gobernanza
 ## Estructura del Repositorio
 
 ```text
-beca-app/
+Becify/
 ├── .github/                # Configuraciones de flujo de trabajo y plantillas de GitHub
 ├── app/                    # Código fuente de la aplicación móvil (Flutter / Dart)
 ├── database/               # Esquemas SQL, migraciones PostgreSQL, políticas RLS y seed data
