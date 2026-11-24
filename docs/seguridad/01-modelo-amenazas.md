@@ -116,6 +116,30 @@ Se identifican las 6 amenazas principales que aplican directamente a la operaci�
 
 ---
 
-## 5. Conclusión
+## 5. Política de Conservación y Eliminación de Datos (Ciclo de Vida)
+
+Para equilibrar el **Derecho a la Privacidad / Supresión (Derecho al Olvido)** del estudiante con la **Auditoría Forense y Prevención de Fraudes** requerida para las instituciones, se define la siguiente política de retención:
+
+### 5.1 Cuenta de Estudiante (Eliminación en Cascada Inmediata)
+- **Qué se elimina:** Fila en `auth.users` y `perfiles` (`correo`, `nombre_completo`), y por efecto de `ON DELETE CASCADE`: todas sus `becas_guardadas` y `preferencias_notificacion`. En el móvil se purgan los tokens en `flutter_secure_storage`.
+- **Qué se conserva:** Ningún dato personal identificable.
+- **Plazo de retención:** **Inmediato (0 días)** en la base de datos de producción. Los respaldos automatizados de recuperación ante desastres (*backups*) sobrescriben los datos en un ciclo máximo de **30 días**.
+
+### 5.2 Cuenta de Institución (Desactivación y Trazabilidad Forense)
+- **Qué se elimina/revoca:** Acceso inmediato y credenciales en `auth.users`.
+- **Qué se conserva:**
+  1. **Convocatorias publicadas (`becas`):** Pasan a estado `cerrada` durante **1 año** para evitar enlaces rotos o inconsistencias a los estudiantes que postularon externamente.
+  2. **Registro de auditoría institucional:** Los campos `verificada_en` y `verificado_por` se conservan en registros de auditoría por **1 a 2 años** para garantizar el no repudio y prevenir fraudes o suplantaciones.
+
+| Perfil / Tipo de Registro | Acción de Eliminación | Tiempo en BD Activa | Tiempo en Backups / Logs | Justificación Técnica / Legal |
+| :--- | :--- | :---: | :---: | :--- |
+| **Estudiante** (PII y favoritos) | Borrado físico (`CASCADE`) | **Inmediato (0 días)** | 30 días (rotación de backup) | Derecho al olvido y minimización de datos. |
+| **Institución** (Acceso) | Revocación inmediata | **Inmediato** | N/A | Seguridad de la plataforma. |
+| **Institución** (Convocatorias) | Desactivación / Estado `cerrada` | **1 año** | 30 días | Continuidad informativa y evitar enlaces rotos. |
+| **Auditoría Forense** (`verificado_por`) | Preservación en log de auditoría | **1 a 2 años** | 1 a 2 años | Prevención de fraudes y trazabilidad legal. |
+
+---
+
+## 6. Conclusión
 
 Este modelo de amenazas demuestra que la seguridad de **Becify** no se basa en parches complejos, sino en **decisiones de diseño preventivas** aplicadas directamente sobre las 5 tablas del modelo relacional y la app móvil. Cubre exactamente los riesgos del MVP: evita becas fraudulentas, protege la privacidad del estudiante y asegura la autenticidad de los enlaces académicos.
