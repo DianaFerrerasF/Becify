@@ -25,7 +25,7 @@ Conforme a la metodología canónica de Coronel & Morris (Cap. 2 y 3), se define
 
 1. **RN-01 (Usuarios y Roles):** Todo usuario en `perfiles` posee un rol exclusivo (`rol_usuario_enum`: `'estudiante'`, `'institucion'`, `'admin'`).
 2. **RN-02 (Aceptación Legal):** Ningún usuario puede operar en el sistema sin aceptar los términos (`terminos_aceptados_en IS NOT NULL`).
-3. **RN-03 (Identificadores Criptográficos):** Todas las claves primarias utilizan `UUID v4` para mitigar ataques de enumeración forense (IDOR).
+3. **RN-03 (Identificadores Únicos UUID):** Todas las claves primarias utilizan `UUID` para evitar que alguien pueda adivinar IDs secuenciales (1, 2, 3...).
 4. **RN-04 (Gobernanza Anti-Fraude):** Las instituciones se registran con `esta_verificada = FALSE`. Únicamente un administrador (`rol = 'admin'`) puede aprobarlas, registrándose la auditoría en `verificado_por` y `verificada_en`.
 5. **RN-05 (Permiso de Publicación):** Solo instituciones con `esta_verificada = TRUE` pueden publicar convocatorias activas en el feed.
 6. **RN-06 (Integridad Referencial 1:N):** Toda beca pertenece obligatoriamente a una institución (`institucion_id NOT NULL REFERENCES instituciones(id) ON DELETE CASCADE`).

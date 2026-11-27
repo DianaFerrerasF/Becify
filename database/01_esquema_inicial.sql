@@ -8,7 +8,7 @@
 -- ALINEADO CON: docs/sprint-0/01-reglas-de-negocio.md (RN-01 a RN-43)
 -- ============================================================================
 
--- Habilitar extensiones criptográficas para identificadores UUID v4
+-- Habilitar extensiones para generar identificadores únicos UUID
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
@@ -159,7 +159,8 @@ COMMENT ON FUNCTION es_admin() IS 'Verifica si el usuario autenticado actual pos
 -- ============================================================================
 
 CREATE TABLE instituciones (
-    id UUID PRIMARY KEY REFERENCES perfiles(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    perfil_id UUID UNIQUE REFERENCES perfiles(id) ON DELETE SET NULL, -- Cuenta de acceso (pasa a NULL si la institución se da de baja, RN-08)
     nombre VARCHAR(200) NOT NULL,
     pais VARCHAR(100) NOT NULL,
     sitio_web VARCHAR(300),                                           -- RN-10: Sitio web oficial verificable
@@ -185,7 +186,7 @@ COMMENT ON TABLE instituciones IS 'Información de universidades y entidades ofe
 
 CREATE TABLE becas (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    institucion_id UUID NOT NULL REFERENCES instituciones(id) ON DELETE CASCADE,
+    institucion_id UUID NOT NULL REFERENCES instituciones(id) ON DELETE RESTRICT, -- RN-20/RN-37: protege el historial contra borrado en cascada
 
     -- RN-14: Campos obligatorios de una oportunidad
     titulo VARCHAR(250) NOT NULL,
@@ -258,7 +259,7 @@ COMMENT ON TABLE preferencias_notificacion IS 'Consentimiento granular de notifi
 
 CREATE TABLE reportes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    beca_id UUID NOT NULL REFERENCES becas(id) ON DELETE CASCADE,
+    beca_id UUID NOT NULL REFERENCES becas(id) ON DELETE RESTRICT, -- RN-37: protege el reporte contra borrado en cascada
     reportado_por UUID REFERENCES perfiles(id) ON DELETE SET NULL,    -- RN-37: SET NULL para preservar el reporte
     motivo TEXT NOT NULL,                                              -- RN-40: Motivo del reporte
     creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW(),

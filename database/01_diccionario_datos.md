@@ -52,14 +52,15 @@
 | `tutor_aviso_enviado_en` | `TIMESTAMPTZ` | --- | SÍ | `NULL` | Fecha de envío del correo de confirmación al tutor (`RN-38`). |
 | `tutor_resolucion` | `tutor_resolucion_enum` | --- | SÍ | `'pendiente'` | Estado de autorización del tutor: `'pendiente'`, `'validada'`, `'no_autorizada'`, `'vencida'`. |
 | `tutor_resuelto_en` | `TIMESTAMPTZ` | --- | SÍ | `NULL` | Fecha en que el tutor respondió o venció el plazo (`RN-38`). |
-| `creado_en` | `TIMESTAMPTZ` | --- | NO | `NOW()` | Auditoría de creación de cuenta. |
+| `creado_en` | `TIMESTAMPTZ` | --- | NO | `NOW()` | Fecha y hora de creación de la cuenta. |
 
 ---
 
 ### Tabla 2: `instituciones`
 | Campo / Atributo | Tipo de Dato | Pk / Fk / Uk | Nulo | Valor por Defecto | Descripción y Regla de Integridad |
 | :--- | :--- | :---: | :---: | :--- | :--- |
-| `id` | `UUID` | **PK, FK** | NO | Ninguno | Llave primaria referenciada a `perfiles(id)` con eliminación en cascada. |
+| `id` | `UUID` | **PK** | NO | `gen_random_uuid()` | Identificador único propio de la institución. |
+| `perfil_id` | `UUID` | **FK, UK** | SÍ | `NULL` | Cuenta de acceso en `perfiles(id)` con `ON DELETE SET NULL` (si se da de baja la cuenta, el historial de la institución no se borra, `RN-08`). |
 | `nombre` | `VARCHAR(200)` | --- | NO | Ninguno | Nombre oficial o razón social de la entidad (mínimo 3 caracteres). |
 | `pais` | `VARCHAR(100)` | --- | NO | Ninguno | País de origen o sede principal. |
 | `sitio_web` | `VARCHAR(300)` | --- | SÍ | `NULL` | Portal web oficial verificable (`^https?://`, `RN-10`). |
@@ -68,7 +69,7 @@
 | `estado` | `estado_institucion_enum` | --- | NO | `'pendiente'` | Estado del ciclo de verificación: `'pendiente'`, `'aprobada'`, `'rechazada'`, `'suspendida'`, `'dada_de_baja'` (`RN-09`). |
 | `asignado_a` | `UUID` | **FK** | SÍ | `NULL` | Administrador asignado para revisar la solicitud (`RN-09`). |
 | `verificada_en` | `TIMESTAMPTZ` | --- | SÍ | `NULL` | Fecha y hora en que fue resuelta por un administrador (`RN-09`). |
-| `verificado_por` | `UUID` | **FK** | SÍ | `NULL` | Auditoría forense: FK hacia `perfiles(id)` con `ON DELETE SET NULL` (`RN-37`). |
+| `verificado_por` | `UUID` | **FK** | SÍ | `NULL` | Registro de control: admin en `perfiles(id)` que aprobó o resolvió la cuenta, con `ON DELETE SET NULL` (`RN-36`, `RN-37`). |
 | `motivo_resolucion` | `TEXT` | --- | SÍ | `NULL` | Motivo de aprobación, rechazo o suspensión (`RN-09`). |
 
 ---
@@ -77,7 +78,7 @@
 | Campo / Atributo | Tipo de Dato | Pk / Fk / Uk | Nulo | Valor por Defecto | Descripción y Regla de Integridad |
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | `id` | `UUID` | **PK** | NO | `gen_random_uuid()` | Identificador único de la oportunidad. |
-| `institucion_id` | `UUID` | **FK** | NO | Ninguno | Llave foránea hacia `instituciones(id)` con eliminación en cascada. |
+| `institucion_id` | `UUID` | **FK** | NO | Ninguno | Llave foránea hacia `instituciones(id)` con `ON DELETE RESTRICT` (evita borrado en cascada, `RN-20`). |
 | `titulo` | `VARCHAR(250)` | --- | NO | Ninguno | Título descriptivo de la oportunidad (mínimo 5 caracteres). |
 | `descripcion` | `TEXT` | --- | NO | Ninguno | Bases completas, beneficios y requisitos del programa. |
 | `nivel_academico` | `nivel_academico_enum` | --- | NO | Ninguno | `'secundaria'`, `'grado'`, `'posgrado'`, `'maestria'`, `'doctorado'` (`RN-15`). |
@@ -124,7 +125,7 @@
 | Campo / Atributo | Tipo de Dato | Pk / Fk / Uk | Nulo | Valor por Defecto | Descripción y Regla de Integridad |
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | `id` | `UUID` | **PK** | NO | `gen_random_uuid()` | Identificador único del reporte (`RN-40`). |
-| `beca_id` | `UUID` | **FK** | NO | Ninguno | Oportunidad reportada (`becas(id)`). |
+| `beca_id` | `UUID` | **FK** | NO | Ninguno | Oportunidad reportada (`becas(id)`) con `ON DELETE RESTRICT` (evita borrar reportes en cascada, `RN-37`). |
 | `reportado_por` | `UUID` | **FK** | SÍ | `NULL` | Estudiante que reportó con `ON DELETE SET NULL` (`RN-37`). |
 | `motivo` | `TEXT` | --- | NO | Ninguno | Motivo del reporte (posible fraude, datos falsos, vencida, etc., `RN-40`). |
 | `creado_en` | `TIMESTAMPTZ` | --- | NO | `NOW()` | Fecha y hora del reporte. |

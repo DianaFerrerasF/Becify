@@ -28,9 +28,9 @@ INSERT INTO perfiles (id, correo, nombre_completo, rol, tramo_edad, version_term
 INSERT INTO perfiles (id, correo, nombre_completo, rol, tramo_edad, tutor_nombre, tutor_correo, tutor_resolucion, version_terminos, consentimiento_datos_en) VALUES
 ('a0000000-0000-0000-0000-000000000004', 'menor@test.com', 'Ana Garcia Lopez', 'estudiante', 'entre_13_y_17', 'Maria Lopez', 'maria.lopez@gmail.com', 'pendiente', '1.0', NOW());
 
--- 3. INSTITUCION en estado pendiente (RN-09)
-INSERT INTO instituciones (id, nombre, pais, sitio_web, url_logo, descripcion, estado) VALUES
-('a0000000-0000-0000-0000-000000000002', 'INTEC - Instituto Tecnologico de Santo Domingo', 'Republica Dominicana', 'https://www.intec.edu.do', 'https://www.intec.edu.do/images/logo.png', 'Universidad lider en ingenieria en RD.', 'pendiente');
+-- 3. INSTITUCION en estado pendiente (RN-09) con id independiente y perfil_id vinculado
+INSERT INTO instituciones (id, perfil_id, nombre, pais, sitio_web, url_logo, descripcion, estado) VALUES
+('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000002', 'INTEC - Instituto Tecnologico de Santo Domingo', 'Republica Dominicana', 'https://www.intec.edu.do', 'https://www.intec.edu.do/images/logo.png', 'Universidad lider en ingenieria en RD.', 'pendiente');
 
 -- 4. APROBAR institucion (RN-09, RN-36)
 UPDATE instituciones SET
@@ -39,7 +39,7 @@ UPDATE instituciones SET
     verificado_por = 'a0000000-0000-0000-0000-000000000001',
     asignado_a = 'a0000000-0000-0000-0000-000000000001',
     motivo_resolucion = 'Dominio oficial intec.edu.do verificado y sitio web activo'
-WHERE id = 'a0000000-0000-0000-0000-000000000002';
+WHERE id = 'c0000000-0000-0000-0000-000000000001';
 
 -- 5. PREFERENCIAS (RN-30)
 INSERT INTO preferencias_notificacion (perfil_id, notificar_7_dias, notificar_24_horas, notificar_cambios_beca) VALUES
@@ -47,9 +47,9 @@ INSERT INTO preferencias_notificacion (perfil_id, notificar_7_dias, notificar_24
 
 -- 6. BECAS con tipo_oportunidad y todas_las_carreras (RN-14, RN-15, RN-16)
 INSERT INTO becas (id, institucion_id, titulo, descripcion, nivel_academico, area_estudio, todas_las_carreras, pais, modalidad, tipo_oportunidad, fecha_limite, enlace_oficial, estado) VALUES
-('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000002', 'Programa PIES - Beca de Excelencia Academica', 'Beca total para bachilleres sobresalientes.', 'grado', 'Ingenieria y Tecnologia', FALSE, 'Republica Dominicana', 'presencial', 'beca_completa', '2026-12-15', 'https://www.intec.edu.do/admisiones/becas-pies', 'activa'),
-('b0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000002', 'Intercambio Academico INTEC-MIT', 'Intercambio de un semestre para posgrado.', 'posgrado', 'Ciberseguridad y Redes', FALSE, 'Estados Unidos', 'presencial', 'intercambio', '2026-12-30', 'https://www.intec.edu.do/posgrado/intercambios', 'activa'),
-('b0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000002', 'Beca de Secundaria - Programa Futuro', 'Beca parcial para secundaria.', 'secundaria', 'General', TRUE, 'Republica Dominicana', 'presencial', 'beca_parcial', '2027-01-15', 'https://www.intec.edu.do/secundaria/futuro', 'activa');
+('b0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Programa PIES - Beca de Excelencia Academica', 'Beca total para bachilleres sobresalientes.', 'grado', 'Ingenieria y Tecnologia', FALSE, 'Republica Dominicana', 'presencial', 'beca_completa', '2026-12-15', 'https://www.intec.edu.do/admisiones/becas-pies', 'activa'),
+('b0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', 'Intercambio Academico INTEC-MIT', 'Intercambio de un semestre para posgrado.', 'posgrado', 'Ciberseguridad y Redes', FALSE, 'Estados Unidos', 'presencial', 'intercambio', '2026-12-30', 'https://www.intec.edu.do/posgrado/intercambios', 'activa'),
+('b0000000-0000-0000-0000-000000000003', 'c0000000-0000-0000-0000-000000000001', 'Beca de Secundaria - Programa Futuro', 'Beca parcial para secundaria.', 'secundaria', 'General', TRUE, 'Republica Dominicana', 'presencial', 'beca_parcial', '2027-01-15', 'https://www.intec.edu.do/secundaria/futuro', 'activa');
 
 -- 7. BECA GUARDADA con marca "Ya aplique" (RN-21, RN-22)
 INSERT INTO becas_guardadas (perfil_id, beca_id, ya_aplique, aplicada_en) VALUES
